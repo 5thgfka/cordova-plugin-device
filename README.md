@@ -23,6 +23,56 @@ description: Get device information.
 
 # cordova-plugin-device
 
+# modify description
+
+remove the initialize of uuid in initialize method.
+
+and add a setDeviceUuid action.
+
+```java
+    public void initialize(CordovaInterface cordova, CordovaWebView webView) {
+        super.initialize(cordova, webView);
+    }
+    
+    public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
+        if ("getDeviceInfo".equals(action)) {
+            JSONObject r = new JSONObject();
+            // r.put("uuid", Device.uuid);
+            r.put("version", this.getOSVersion());
+            r.put("platform", this.getPlatform());
+            r.put("model", this.getModel());
+            r.put("manufacturer", this.getManufacturer());
+            r.put("isVirtual", this.isVirtual());
+            r.put("serial", this.getSerialNumber());
+            callbackContext.success(r);
+        }
+        else if("setDeviceUuid".equals(action)) {
+            JSONObject r = new JSONObject();
+            r.put("uuid", this.getUuid());
+            callbackContext.success(r);
+        }
+        else {
+            return false;
+        }
+        return true;
+    }
+```
+
+and modify device.js.
+
+comment me.uuid = info.uuid;
+
+```js
+// me.uuid = info.uuid;
+
+Device.prototype.setDeviceUuid = function (successCallback, errorCallback) {
+    argscheck.checkArgs('fF', 'Device.setDeviceUuid', arguments);
+    exec(successCallback, errorCallback, 'Device', 'setDeviceUuid', []);
+};
+```
+
+if you need uuid, you just need to call setDeviceUuid method.
+
 [![Android Testsuite](https://github.com/apache/cordova-plugin-device/actions/workflows/android.yml/badge.svg)](https://github.com/apache/cordova-plugin-device/actions/workflows/android.yml) [![Chrome Testsuite](https://github.com/apache/cordova-plugin-device/actions/workflows/chrome.yml/badge.svg)](https://github.com/apache/cordova-plugin-device/actions/workflows/chrome.yml) [![iOS Testsuite](https://github.com/apache/cordova-plugin-device/actions/workflows/ios.yml/badge.svg)](https://github.com/apache/cordova-plugin-device/actions/workflows/ios.yml) [![Lint Test](https://github.com/apache/cordova-plugin-device/actions/workflows/lint.yml/badge.svg)](https://github.com/apache/cordova-plugin-device/actions/workflows/lint.yml)
 
 This plugin defines a global `device` object, which describes the device's hardware and software.

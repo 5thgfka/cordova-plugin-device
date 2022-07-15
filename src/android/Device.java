@@ -55,7 +55,6 @@ public class Device extends CordovaPlugin {
      */
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
-        Device.uuid = getUuid();
     }
 
     /**
@@ -69,14 +68,18 @@ public class Device extends CordovaPlugin {
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
         if ("getDeviceInfo".equals(action)) {
             JSONObject r = new JSONObject();
-            r.put("uuid", Device.uuid);
+            // r.put("uuid", Device.uuid);
             r.put("version", this.getOSVersion());
             r.put("platform", this.getPlatform());
             r.put("model", this.getModel());
             r.put("manufacturer", this.getManufacturer());
-	        r.put("isVirtual", this.isVirtual());
+            r.put("isVirtual", this.isVirtual());
             r.put("serial", this.getSerialNumber());
-            r.put("sdkVersion", this.getSDKVersion());
+            callbackContext.success(r);
+        }
+        else if("setDeviceUuid".equals(action)) {
+            JSONObject r = new JSONObject();
+            r.put("uuid", this.getUuid());
             callbackContext.success(r);
         }
         else {
@@ -145,7 +148,9 @@ public class Device extends CordovaPlugin {
     }
 
     public String getSDKVersion() {
-        return String.valueOf(android.os.Build.VERSION.SDK_INT);
+        @SuppressWarnings("deprecation")
+        String sdkversion = android.os.Build.VERSION.SDK;
+        return sdkversion;
     }
 
     public String getTimeZoneID() {
@@ -166,8 +171,8 @@ public class Device extends CordovaPlugin {
     }
 
     public boolean isVirtual() {
-	return android.os.Build.FINGERPRINT.contains("generic") ||
-	    android.os.Build.PRODUCT.contains("sdk");
+    return android.os.Build.FINGERPRINT.contains("generic") ||
+        android.os.Build.PRODUCT.contains("sdk");
     }
 
 }
